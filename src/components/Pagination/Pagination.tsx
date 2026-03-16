@@ -1,27 +1,32 @@
 interface Props {
   total: number;
   perPage: number;
-  currentPage: number;
+  currentPage?: number;
   onPageChange: (page: number) => void;
 }
 
-export const Pagination = (props: Props) => {
-  const pagesCount = Math.ceil(props.total / props.perPage) || 0;
+export const Pagination = ({
+  total,
+  perPage,
+  currentPage = 1,
+  onPageChange,
+}: Props) => {
+  const pagesCount = Math.ceil(total / perPage) || 0;
 
   const pages = Array.from({ length: pagesCount }, (_, index) => index + 1);
 
   return (
     <ul className="pagination">
-      <li className={`page-item ${props.currentPage === 1 ? 'disabled' : ''}`}>
+      <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
         <a
           data-cy="prevLink"
           className="page-link"
           href="#prev"
-          aria-disabled={props.currentPage === 1}
+          aria-disabled={currentPage === 1}
           onClick={event => {
             event.preventDefault();
-            if (props.currentPage > 1) {
-              props.onPageChange(props.currentPage - 1);
+            if (currentPage > 1) {
+              onPageChange(currentPage - 1);
             }
           }}
         >
@@ -31,7 +36,7 @@ export const Pagination = (props: Props) => {
       {pages.map(page => {
         return (
           <li
-            className={`page-item ${page === props.currentPage ? 'active' : ''}`}
+            className={`page-item ${page === currentPage ? 'active' : ''}`}
             key={page}
           >
             <a
@@ -40,8 +45,8 @@ export const Pagination = (props: Props) => {
               href={`#${page}`}
               onClick={event => {
                 event.preventDefault();
-                if (page !== props.currentPage) {
-                  props.onPageChange(page);
+                if (page !== currentPage) {
+                  onPageChange(page);
                 }
               }}
             >
@@ -51,17 +56,17 @@ export const Pagination = (props: Props) => {
         );
       })}
       <li
-        className={`page-item ${props.currentPage === pagesCount ? 'disabled' : ''}`}
+        className={`page-item ${currentPage === pagesCount ? 'disabled' : ''}`}
       >
         <a
           data-cy="nextLink"
           className="page-link"
           href="#next"
-          aria-disabled={props.currentPage === pagesCount}
+          aria-disabled={currentPage === pagesCount}
           onClick={event => {
             event.preventDefault();
-            if (props.currentPage < pagesCount) {
-              props.onPageChange(props.currentPage + 1);
+            if (currentPage < pagesCount) {
+              onPageChange(currentPage + 1);
             }
           }}
         >

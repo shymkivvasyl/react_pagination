@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSearchParams } from 'react-router-dom';
 import './App.css';
 import { getNumbers } from './utils';
 import { Pagination } from './components/Pagination';
@@ -7,8 +8,10 @@ import { Pagination } from './components/Pagination';
 const items = getNumbers(1, 42).map(n => `Item ${n}`);
 
 export const App: React.FC = () => {
-  const [currentPage, setCurrentPage] = React.useState<number>(1);
-  const [perPage, setPerPage] = React.useState<number>(5);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const currentPage = Number(searchParams.get('page') ?? 1);
+  const perPage = Number(searchParams.get('perPage') ?? 5);
 
   const startIndex = (currentPage - 1) * perPage;
 
@@ -18,7 +21,8 @@ export const App: React.FC = () => {
     <div className="container">
       <h1>Items with Pagination</h1>
       <p className="lead" data-cy="info">
-        Page {currentPage} (items {startIndex + 1} - {Math.min(startIndex + perPage, items.length)} of {items.length})
+        Page {currentPage} (items {startIndex + 1} -{' '}
+        {Math.min(startIndex + perPage, items.length)} of {items.length})
       </p>
       <div className="form-group row">
         <div className="col-3 col-sm-2 col-xl-1">
@@ -28,8 +32,10 @@ export const App: React.FC = () => {
             className="form-control"
             value={perPage}
             onChange={event => {
-              setPerPage(Number(event.target.value));
-              setCurrentPage(1);
+              setSearchParams({
+                page: '1',
+                perPage: String(Number(event.target.value)),
+              });
             }}
           >
             <option value="3">3</option>
@@ -46,7 +52,12 @@ export const App: React.FC = () => {
         total={items.length}
         perPage={perPage}
         currentPage={currentPage}
-        onPageChange={setCurrentPage}
+        onPageChange={page => {
+          setSearchParams({
+            page: String(page),
+            perPage: String(perPage),
+          });
+        }}
       />
       <ul>
         {visibleItems.map(item => (
